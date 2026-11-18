@@ -1,0 +1,135 @@
+/* =========================================================
+   panels.css — 左右面板内的控件：预设、模式、滑杆、
+                声源列表、轨迹工具、双耳线索、主观听评
+   ========================================================= */
+
+/* ---------------- 场景预设 ---------------- */
+.presetGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.preset{
+  text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+  padding:8px 9px;cursor:pointer;transition:.15s;color:var(--txt);
+}
+.preset b{display:block;font-size:12px;font-weight:600;margin-bottom:2px}
+.preset span{display:block;font-size:10.5px;color:var(--dim2);line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preset:hover{border-color:#2c3f55;background:#151f2b}
+.preset.on{border-color:rgba(53,227,194,.55);background:rgba(53,227,194,.08);box-shadow:inset 0 0 0 1px rgba(53,227,194,.12)}
+.preset.on b{color:var(--teal)}
+
+/* ---------------- 空间化模式 ---------------- */
+.modeList{display:flex;flex-direction:column;gap:6px}
+.mode{
+  text-align:left;background:transparent;border:1px solid var(--line);border-radius:9px;
+  padding:7px 10px;cursor:pointer;color:var(--txt);transition:.15s;position:relative;
+}
+.mode b{display:block;font-size:12.5px;font-weight:600}
+.mode span{display:block;font-size:10.5px;color:var(--dim2)}
+.mode:hover{border-color:#2c3f55;background:rgba(255,255,255,.02)}
+.mode.on{border-color:rgba(53,227,194,.6);background:linear-gradient(90deg,rgba(53,227,194,.12),rgba(53,227,194,.02))}
+.mode.on b{color:var(--teal)}
+.mode.on::after{
+  content:"";position:absolute;right:10px;top:50%;width:6px;height:6px;margin-top:-3px;
+  border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);
+}
+
+/* ---------------- 滑杆 / 下拉 ---------------- */
+.slider{display:block;margin-bottom:8px}
+.slider>span{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  font-size:11.5px;color:var(--dim);margin-bottom:4px;
+}
+.slider output{font:11px/1 var(--mono);color:var(--txt)}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:3px;background:#1e2b3a;outline:none}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:var(--teal);border:2px solid #0b1017;cursor:pointer;
+  box-shadow:0 0 0 1px rgba(53,227,194,.5),0 0 12px -2px var(--teal);
+}
+input[type=range]::-moz-range-thumb{
+  width:13px;height:13px;border:2px solid #0b1017;border-radius:50%;background:var(--teal);cursor:pointer;
+}
+select{
+  width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line2);
+  border-radius:8px;padding:7px 9px;font:12px/1.4 inherit;outline:none;cursor:pointer;
+}
+select:focus{border-color:var(--teal)}
+
+/* ---------------- 折叠块 ---------------- */
+.fold summary{
+  list-style:none;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.6px;color:var(--dim);
+  display:flex;align-items:center;gap:7px;padding:2px 0;
+}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary::before{content:"›";font:14px/1 var(--mono);color:var(--dim2);transition:.2s;transform:translateY(-1px)}
+.fold[open] summary::before{transform:rotate(90deg) translateX(1px)}
+.fold[open] summary{color:var(--txt);margin-bottom:8px}
+.fold summary:hover{color:var(--txt)}
+.fold summary .tag{margin-left:auto;font-weight:400}
+
+/* ---------------- 声源列表 ---------------- */
+.sourceList{display:flex;flex-direction:column;gap:2px}
+.srcRow{
+  display:flex;align-items:center;gap:9px;padding:2px 8px;border-radius:9px;
+  border:1px solid transparent;cursor:pointer;transition:.14s;
+}
+.srcRow:hover{background:rgba(255,255,255,.035)}
+.srcRow.on{background:rgba(53,227,194,.07);border-color:rgba(53,227,194,.28)}
+.srcDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px -1px currentColor}
+.srcName{font-size:12.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srcRow.off .srcName{color:var(--dim2);text-decoration:line-through}
+.srcDist{font:10.5px/1 var(--mono);color:var(--dim2);flex:0 0 auto}
+.srcMute{
+  width:22px;height:22px;border-radius:6px;border:1px solid var(--line2);background:transparent;
+  color:var(--dim2);cursor:pointer;font:10px/1 var(--mono);flex:0 0 auto;padding:0;
+}
+.srcMute:hover{color:var(--txt);border-color:#33465c}
+.srcRow.off .srcMute{color:var(--amber);border-color:rgba(255,180,87,.4)}
+
+/* ---------------- 双耳线索 ---------------- */
+.ears{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.earRow{display:flex;align-items:center;gap:9px}
+.earRow span{font-size:11px;color:var(--dim);width:30px;flex:0 0 auto}
+.earRow .bar{flex:1;height:7px;border-radius:4px;background:#16202c;overflow:hidden;position:relative}
+.earRow .bar i{
+  position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:4px;
+  background:linear-gradient(90deg,#1d7f6d,var(--teal));transition:width .1s linear;
+}
+.earRow:nth-child(2) .bar i{background:linear-gradient(90deg,#8a5a1a,var(--amber))}
+
+.cueGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cue{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:6px 9px}
+.cue span{display:block;font-size:10.5px;color:var(--dim2);margin-bottom:3px}
+.cue b{font:13px/1.2 var(--mono);color:var(--txt);font-weight:600}
+.cueNote{margin:9px 0 0;font-size:10.5px;color:var(--dim2);line-height:1.5}
+
+/* ---------------- 自由路径工具 ---------------- */
+.pathTools{
+  margin:2px 0 8px;padding:7px;border:1px solid var(--line);border-radius:9px;
+  background:linear-gradient(180deg,rgba(18,26,36,.9),rgba(14,20,28,.9));
+}
+.pathRow{display:flex;gap:4px}
+.tbtn{
+  flex:1;font:11px/1 inherit;color:var(--dim);background:#0f1721;
+  border:1px solid var(--line2);border-radius:7px;padding:5px 3px;cursor:pointer;
+  transition:.14s;white-space:nowrap;
+}
+.tbtn:hover{color:var(--txt);border-color:#33465c}
+.tbtn:disabled{opacity:.4;cursor:not-allowed}
+.tbtn.primary{color:var(--teal);border-color:rgba(53,227,194,.4)}
+.tbtn.primary.on{background:var(--teal);color:#04211c;border-color:var(--teal);font-weight:600}
+.tbtn.on{color:var(--amber);border-color:rgba(255,180,87,.45);background:rgba(255,180,87,.10)}
+.tbtn.danger:hover{color:var(--red);border-color:rgba(255,107,107,.45)}
+
+/* ---------------- 主观听评 ---------------- */
+.rateRows{display:flex;flex-direction:column;gap:7px}
+.rateRow{display:flex;align-items:center;gap:8px}
+.rateRow>span{font-size:11.5px;color:var(--dim);width:58px;flex:0 0 auto}
+.stars{display:flex;gap:4px}
+.star{
+  width:22px;height:22px;border-radius:6px;border:1px solid var(--line2);background:transparent;
+  color:var(--dim2);font:10.5px/1 var(--mono);cursor:pointer;padding:0;transition:.12s;
+}
+.star:hover{border-color:#33465c;color:var(--txt)}
+.star.on{background:rgba(255,180,87,.16);border-color:rgba(255,180,87,.6);color:var(--amber);font-weight:700}
+.rateStats{margin:9px 0 0;font-size:10.5px;color:var(--dim2);line-height:1.5}

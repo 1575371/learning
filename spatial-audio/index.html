@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>空间音频实验室 · 把声音放进三维房间</title>
+<meta name="description" content="戴上耳机拖动声源，就能听见方位、高度与距离的变化。5 种空间化模式、6 个场景预设，打开网页即用，无需安装。" />
+
+<!-- ===== 转发预览：微信 / QQ / 其他社交平台抓取的字段 =====
+     og:image 必须是绝对地址，所以发布到线上后要把下面的 URL 换成实际域名；
+     本地双击打开时这些标签无害，只是不生效。 -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="空间音频实验室" />
+<meta property="og:title" content="空间音频实验室｜把声音放进三维房间" />
+<meta property="og:description" content="戴上耳机，拖动声源，听听方位与距离是怎么被耳朵认出来的：5 种空间化模式、6 个场景预设，打开网页就能玩。" />
+<meta property="og:image" content="https://1575371.github.io/learning/spatial-audio/assets/img/share-cover.jpg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:url" content="https://1575371.github.io/learning/spatial-audio/" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="zh_CN" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="空间音频实验室｜把声音放进三维房间" />
+<meta name="twitter:description" content="戴上耳机，拖动声源，听听方位与距离是怎么被耳朵认出来的。" />
+<meta name="twitter:image" content="https://1575371.github.io/learning/spatial-audio/assets/img/share-cover.jpg" />
+
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/panels.css" />
+<link rel="stylesheet" href="assets/css/stage.css" />
+<link rel="stylesheet" href="assets/css/responsive.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header id="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="brandText">
+        <h1>空间音频实验室</h1>
+        <p>把声音放进三维房间 · 方位 / 高度 / 距离 / 轨迹 / 混响</p>
+      </div>
+    </div>
+    <div class="topActions">
+      <span id="modeBadge" class="badge">双耳 · HRTF</span>
+      <button id="abBtn" class="btn ghost">A/B 对照试听</button>
+      <button id="playBtn" class="btn primary">开始试听</button>
+    </div>
+  </header>
+
+  <div id="layout">
+
+    <!-- ============ 左栏：场景与表示 ============ -->
+    <aside id="leftPanel" class="panel">
+      <section class="block">
+        <h2>场景预设</h2>
+        <div id="presetList" class="presetGrid"></div>
+      </section>
+
+      <section class="block">
+        <h2>空间化模式 <span class="tag">5 种</span></h2>
+        <div id="modeList" class="modeList">
+          <button class="mode" data-mode="mono">
+            <b>单声道</b><span>1 个信号，没有方向</span>
+          </button>
+          <button class="mode" data-mode="stereo">
+            <b>立体声</b><span>只有左右强弱差（ILD）</span>
+          </button>
+          <button class="mode" data-mode="model">
+            <b>双耳 · 模型</b><span>ILD + ITD + 头部遮蔽</span>
+          </button>
+          <button class="mode" data-mode="hrtf">
+            <b>双耳 · HRTF</b><span>实测头相关传输函数</span>
+          </button>
+          <button class="mode" data-mode="foa">
+            <b>一阶 Ambisonics</b><span>W/X/Y/Z 四分量编码 → 解码</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>房间声学</h2>
+        <label class="slider">
+          <span>混响时间 RT60 <output id="rt60Out">0.9 s</output></span>
+          <input type="range" id="rt60" min="0.2" max="2.4" step="0.1" value="0.9" />
+        </label>
+        <label class="slider">
+          <span>混响量 <output id="wetOut">35%</output></span>
+          <input type="range" id="wet" min="0" max="100" step="1" value="35" />
+        </label>
+        <label class="slider">
+          <span>主音量 <output id="masterOut">80%</output></span>
+          <input type="range" id="master" min="0" max="100" step="1" value="80" />
+        </label>
+      </section>
+      <details class="block fold" id="distBlock">
+        <summary>距离与反射 <span class="tag" id="drTag">D/R —</span></summary>
+        <label class="slider">
+          <span>空气吸收<output id="absorbOut">100%</output></span>
+          <input type="range" id="absorbRange" min="0" max="200" step="5" value="100"
+                 title="高频随距离衰减的强度。0 = 远近只差音量，200 = 远处非常闷" />
+        </label>
+        <label class="slider">
+          <span>一次反射 强度<output id="refLevelOut">80%</output></span>
+          <input type="range" id="refLevelRange" min="0" max="150" step="5" value="80"
+                 title="决定直达声与反射声的比例" />
+        </label>
+        <label class="slider">
+          <span>反射延迟<output id="refDelayOut">1.0×</output></span>
+          <input type="range" id="refDelayRange" min="40" max="250" step="5" value="100"
+                 title="房间几何算出的延迟的倍率，越大越像更大的空间" />
+        </label>
+        <label class="slider">
+          <span>墙面吸声<output id="refDampOut">50%</output></span>
+          <input type="range" id="refDampRange" min="0" max="100" step="5" value="50"
+                 title="反射声的高频损失，越大墙面越软" />
+        </label>
+        <p class="cueNote" id="distNote">反射 — ms · 高频 — kHz</p>
+      </details>
+    </aside>
+
+    <!-- ============ 中间：三维房间 ============ -->
+    <main id="stage">
+      <canvas id="room"></canvas>
+
+      <div class="camHud">
+        <button class="camBtn on" data-cam="oblique" title="斜视角（默认）">斜视</button>
+        <button class="camBtn" data-cam="top" title="从正上方看">俯视</button>
+        <button class="camBtn" data-cam="side" title="从侧面看">侧视</button>
+        <button class="camBtn" id="camSpin" title="镜头自动环绕">环绕</button>
+      </div>
+
+      <div class="stageHint" id="stageHint">拖动声源 · 拖空白处转视角 · 滚轮缩放 · Shift+拖动改高度</div>
+      <div id="abToast" class="abToast"></div>
+
+      <div id="startOverlay" class="startOverlay">
+        <div class="startCard">
+          <div class="startRings"><i></i><i></i><i></i></div>
+          <h2>进入房间</h2>
+          <p>浏览器需要一次点击才能开始播放音频。<br />戴上耳机，感受声音从哪里来、离你多远。</p>
+          <button id="startBtn" class="btn primary big">开始试听</button>
+          <p class="tiny">犬吠与脚步为真实录音，其余声源由 Web Audio 实时合成</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============ 右栏：声源与读数 ============ -->
+    <aside id="rightPanel" class="panel">
+      <section class="block">
+        <h2>声源 <span class="tag" id="srcCount">6</span></h2>
+        <div id="sourceList" class="sourceList"></div>
+      </section>
+
+      <section class="block" id="paramsBlock">
+        <h2>声源参数 <em id="inspName">狗叫</em></h2>
+        <label class="slider">
+          <span id="heightLabel">高度<output id="heightOut">0.0 m</output></span>
+          <input type="range" id="heightRange" min="-0.6" max="3" step="0.1" value="0" title="相对听者耳平面的高度" />
+        </label>
+        <label class="slider">
+          <span>轨迹</span>
+          <select id="trajSel">
+            <option value="static">静止</option>
+            <option value="line">直线往复</option>
+            <option value="orbit">绕听者环绕</option>
+            <option value="path">自由路径</option>
+          </select>
+        </label>
+        <label class="slider">
+          <span id="periodLabel">单程时长 <output id="periodOut">6.0 s</output></span>
+          <input type="range" id="periodRange" min="2" max="30" step="0.5" value="6" />
+        </label>
+        <label class="slider" id="radiusWrap" style="display:none">
+          <span>环绕半径 <output id="radiusOut">2.0 m</output></span>
+          <input type="range" id="radiusRange" min="0.8" max="4.2" step="0.1" value="2" />
+        </label>
+
+        <div id="pathTools" class="pathTools" style="display:none">
+          <div class="pathRow">
+            <button id="pathAdd" class="tbtn primary">＋ 加点</button>
+            <button id="pathClose" class="tbtn">闭合</button>
+            <button id="pathUndo" class="tbtn">撤销</button>
+            <button id="pathClear" class="tbtn danger">清空</button>
+          </div>
+        </div>
+
+        <label class="slider">
+          <span>音量 <output id="gainOut">90%</output></span>
+          <input type="range" id="gainRange" min="0" max="100" step="1" value="90" />
+        </label>
+      </section>
+
+      <section class="block">
+        <h2>双耳线索</h2>
+        <div class="ears">
+          <div class="earRow"><span>左耳</span><div class="bar"><i id="earL"></i></div></div>
+          <div class="earRow"><span>右耳</span><div class="bar"><i id="earR"></i></div></div>
+        </div>
+        <div class="cueGrid">
+          <div class="cue"><span>ITD 时间差</span><b id="cueItd">—</b></div>
+          <div class="cue"><span>ILD 声级差</span><b id="cueIld">—</b></div>
+        </div>
+        <p class="cueNote" id="itdSide">低频靠时间差定位，高频靠声级差定位。</p>
+      </section>
+
+      <details class="block fold" id="rateBlock">
+        <summary>评测 · 客观 + 主观 <span class="tag" id="evalTag">—</span></summary>
+
+        <div class="cueGrid" id="evalGrid">
+          <div class="cue"><span>ITD 实测</span><b id="eItd">—</b></div>
+          <div class="cue"><span>ITD 误差</span><b id="eItdErr">—</b></div>
+          <div class="cue"><span>FOA 角度误差</span><b id="eFoa">—</b></div>
+          <div class="cue"><span>扩散度</span><b id="eDiff">—</b></div>
+        </div>
+        <p class="cueNote">ITD 由输出左右声道互相关实测；FOA 方位由 W/X/Y/Z 的有功声强矢量算出。
+          两者都需要单一声源占主导才有确定的目标值——切到「擦身而过」或「走廊脚步」看数值。</p>
+
+        <div id="rateRows" class="rateRows" style="margin-top:10px"></div>
+        <button id="rateSubmit" class="btn small">记录本次评分</button>
+        <p class="rateStats" id="rateStats">还没有记录。</p>
+      </details>
+    </aside>
+  </div>
+
+  <!-- ============ 底部：实时指标 ============ -->
+  <footer id="meterbar">
+    <div class="metric"><span>方位角</span><b id="mAz">—</b></div>
+    <div class="metric"><span>仰角</span><b id="mEl">—</b></div>
+    <div class="metric"><span>距离</span><b id="mDist">—</b></div>
+    <div class="metric"><span>ITD</span><b id="mItd">—</b></div>
+    <div class="metric"><span>ILD</span><b id="mIld">—</b></div>
+    <div class="metric" title="直达声与一次反射声的声级比：越靠近 0 dB 说明反射越突出"><span>直达/反射</span><b id="mDr">—</b></div>
+    <div class="metric grow">
+      <span>FOA 编码（一阶 Ambisonics · AmbiX）</span>
+      <div class="foaRow">
+        <div class="foa"><i>W</i><div class="fbar"><em id="foaW"></em></div></div>
+        <div class="foa"><i>X 前</i><div class="fbar"><em id="foaX"></em></div></div>
+        <div class="foa"><i>Y 左</i><div class="fbar"><em id="foaY"></em></div></div>
+        <div class="foa"><i>Z 上</i><div class="fbar"><em id="foaZ"></em></div></div>
+      </div>
+    </div>
+    <div class="metric lr">
+      <span>输出电平 L / R</span>
+      <div class="lrBars"><div class="lvl"><em id="lvlL"></em></div><div class="lvl"><em id="lvlR"></em></div></div>
+    </div>
+  </footer>
+</div>
+
+<noscript>
+  <p style="padding:24px;color:#e9f0f7">这个演示需要 JavaScript 才能运行，请在浏览器设置中启用 JavaScript 后重新打开。</p>
+</noscript>
+
+<!-- 脚本按依赖顺序加载：录音数据 → 基础层 → 合成 → 空间化 → 音频图 → 视图 → 装配 -->
+<script src="assets/js/samples.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/synth.js"></script>
+<script src="assets/js/spatial.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/view.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

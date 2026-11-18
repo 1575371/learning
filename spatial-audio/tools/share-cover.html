@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>share cover 1200×630</title>
+<!--
+  分享封面，用于 og:image / 微信转发缩略图。
+  用 tools/make-cover.mjs 渲染成 assets/img/share-cover.png（1200×630，2x 采样）。
+  改文案直接改这个文件，再跑一次脚本即可。
+-->
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1200px;height:630px;overflow:hidden}
+  body{
+    background:#070b10;
+    font-family:"PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",sans-serif;
+    color:#e8f0f8;position:relative;
+  }
+  .glow{
+    position:absolute;inset:0;
+    background:
+      radial-gradient(60% 70% at 76% 46%, rgba(53,227,194,.16) 0%, rgba(53,227,194,0) 62%),
+      radial-gradient(45% 55% at 8% 88%, rgba(90,169,255,.12) 0%, rgba(90,169,255,0) 70%),
+      linear-gradient(160deg,#0b131c 0%,#070b10 55%,#05080c 100%);
+  }
+  .grid{
+    position:absolute;inset:0;opacity:.35;
+    background-image:linear-gradient(rgba(90,130,170,.08) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(90,130,170,.08) 1px,transparent 1px);
+    background-size:40px 40px;
+    mask-image:radial-gradient(70% 70% at 50% 50%,#000 30%,transparent 100%);
+  }
+
+  .wrap{position:relative;height:100%;display:flex;align-items:center;padding:0 64px}
+
+  .left{width:600px;flex:0 0 auto}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:9px;
+    font:600 15px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:1.6px;
+    color:#35e3c2;border:1px solid rgba(53,227,194,.38);
+    background:rgba(53,227,194,.09);padding:9px 15px;border-radius:999px;
+  }
+  .badge i{width:7px;height:7px;border-radius:50%;background:#35e3c2;box-shadow:0 0 12px #35e3c2}
+
+  h1{
+    font-size:64px;line-height:1.08;font-weight:800;letter-spacing:1px;
+    margin:24px 0 0;background:linear-gradient(180deg,#ffffff 0%,#c9dceb 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{
+    margin-top:18px;font-size:25px;line-height:1.5;color:#93a8bd;font-weight:400;
+  }
+  .sub b{color:#dbe8f4;font-weight:600}
+
+  .chips{display:flex;gap:10px;margin-top:26px}
+  .chip{
+    font-size:16px;color:#a9bed2;border:1px solid rgba(120,150,180,.28);
+    background:rgba(255,255,255,.035);padding:8px 14px;border-radius:9px;
+  }
+  .chip b{color:#35e3c2;font-weight:700}
+
+  .cta{
+    display:inline-flex;align-items:center;gap:12px;margin-top:34px;
+    background:linear-gradient(180deg,#3ef0ce,#1fbfa4);color:#04201c;
+    font-size:21px;font-weight:800;letter-spacing:.5px;
+    padding:16px 28px;border-radius:13px;
+    box-shadow:0 12px 34px rgba(53,227,194,.28),0 0 0 1px rgba(53,227,194,.5) inset;
+  }
+  .cta span{font-size:26px;line-height:1}
+
+  /* ---- 右侧等距房间线框 ---- */
+  .art{position:relative;flex:1 1 auto;height:100%;display:flex;align-items:center;justify-content:center}
+  .art svg{width:520px;height:auto;overflow:visible}
+  .lbl{font:600 13px/1 "PingFang SC","Microsoft YaHei",sans-serif}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="grid"></div>
+
+<div class="wrap">
+  <div class="left">
+    <div class="badge"><i></i>SPATIAL AUDIO LAB</div>
+    <h1>空间音频实验室</h1>
+    <p class="sub">把声音放进<b>三维房间</b>，<br>听见方位、高度与距离</p>
+    <div class="chips">
+      <div class="chip"><b>5</b> 种空间化模式</div>
+      <div class="chip"><b>6</b> 个场景预设</div>
+      <div class="chip">实时 <b>ITD</b> / <b>ILD</b> 读数</div>
+    </div>
+    <div class="cta">点击进入 · 戴上耳机 <span>→</span></div>
+  </div>
+
+  <div class="art">
+    <svg viewBox="0 0 520 460" fill="none">
+      <defs>
+        <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#35e3c2" stop-opacity=".10"/>
+          <stop offset="1" stop-color="#35e3c2" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="lit" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#35e3c2" stop-opacity=".55"/>
+          <stop offset="1" stop-color="#35e3c2" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- 地板：等距菱形 A(260,300) B(470,400) C(260,500) D(50,400)
+           网格线必须落在这个菱形里，否则会从墙外穿出去 -->
+      <g opacity=".95">
+        <path d="M260 300 L470 400 L260 500 L50 400 Z" fill="url(#wall)" opacity=".45"/>
+        <g stroke="#4b7fa8" stroke-opacity=".28" stroke-width="1">
+          <!-- 平行 BA 方向 -->
+          <path d="M218 320 L428 420"/><path d="M176 340 L386 440"/>
+          <path d="M134 360 L344 460"/><path d="M92 380 L302 480"/>
+          <!-- 平行 AD 方向 -->
+          <path d="M302 320 L92 420"/><path d="M344 340 L134 440"/>
+          <path d="M386 360 L176 460"/><path d="M428 380 L218 480"/>
+        </g>
+        <path d="M260 300 L470 400 L260 500 L50 400 Z" stroke="#5aa3d8" stroke-opacity=".55"/>
+      </g>
+
+      <!-- 四面墙的竖边 -->
+      <g stroke="#4b7fa8" stroke-opacity=".28">
+        <path d="M50 400 L50 190"/><path d="M470 400 L470 190"/>
+        <path d="M260 500 L260 290"/><path d="M260 300 L260 90"/>
+      </g>
+      <!-- 顶框 -->
+      <path d="M260 90 L470 190 L260 290 L50 190 Z" stroke="#5aa3d8" stroke-opacity=".34" fill="none"/>
+
+      <!-- 距离环（以听者为圆心，贴着地面） -->
+      <ellipse cx="260" cy="400" rx="118" ry="50" stroke="#35e3c2" stroke-opacity=".20" stroke-dasharray="4 5"/>
+      <ellipse cx="260" cy="400" rx="196" ry="84" stroke="#35e3c2" stroke-opacity=".12" stroke-dasharray="4 6"/>
+
+      <!-- 听者 -->
+      <ellipse cx="260" cy="400" rx="26" ry="11" fill="url(#lit)"/>
+      <circle cx="260" cy="382" r="9" fill="#35e3c2"/>
+      <circle cx="260" cy="382" r="16" fill="none" stroke="#35e3c2" stroke-opacity=".45"/>
+
+      <!-- 声源：点 + 落地立柱，全部落在地板菱形内 -->
+      <g>
+        <circle cx="168" cy="352" r="7" fill="#5aa9ff"/>
+        <path d="M168 359 L168 404" stroke="#5aa9ff" stroke-opacity=".5" stroke-dasharray="3 4"/>
+        <ellipse cx="168" cy="404" rx="6" ry="3" fill="#5aa9ff" fill-opacity=".20"/>
+      </g>
+      <g>
+        <circle cx="352" cy="330" r="7" fill="#ff9a5a"/>
+        <path d="M352 337 L352 376" stroke="#ff9a5a" stroke-opacity=".5" stroke-dasharray="3 4"/>
+        <ellipse cx="352" cy="376" rx="6" ry="3" fill="#ff9a5a" fill-opacity=".20"/>
+      </g>
+      <g>
+        <circle cx="318" cy="440" r="7" fill="#a78bfa"/>
+        <path d="M318 447 L318 458" stroke="#a78bfa" stroke-opacity=".5" stroke-dasharray="3 4"/>
+      </g>
+
+      <!-- 轨迹虚线 -->
+      <path d="M168 352 Q270 268 352 330" stroke="#35e3c2" stroke-opacity=".42" stroke-dasharray="5 6" fill="none"/>
+
+      <!-- 标签 -->
+      <g class="lbl" fill="#cfe0ee" fill-opacity=".92">
+        <text x="168" y="338" text-anchor="middle">雨声</text>
+        <text x="352" y="316" text-anchor="middle">狗叫</text>
+        <text x="260" y="420" text-anchor="middle" fill="#35e3c2">听者</text>
+      </g>
+
+      <!-- 声波弧 -->
+      <g stroke="#35e3c2" stroke-opacity=".30">
+        <path d="M300 350 q26 -14 0 -30"/><path d="M322 360 q44 -26 0 -52"/>
+      </g>
+    </svg>
+  </div>
+</div>
+</body>
+</html>

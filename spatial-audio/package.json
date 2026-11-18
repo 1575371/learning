@@ -1,0 +1,23 @@
+{
+  "name": "spatial-audio-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "三维空间音频实验室：把声音放进房间，实时听见方位、距离、轨迹与房间反射",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "verify": "node tools/verify.mjs",
+    "cover": "node tools/make-cover.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "spatial-audio",
+    "binaural",
+    "hrtf",
+    "ambisonics",
+    "web-audio"
+  ],
+  "license": "UNLICENSED"
+}

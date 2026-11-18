@@ -1,0 +1,17 @@
+# 依赖（本项目运行时零依赖，这里只为生成封面时临时安装）
+node_modules/
+
+# 打包产物与临时文件
+dist/
+*.log
+*.tmp
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# WorkBuddy 的应用标记文件（与代码无关，不应进仓库）
+.wbapp_*.genie
+.workbuddy/

@@ -1,0 +1,117 @@
+/* =========================================================
+   responsive.css — 断点适配
+   ≥1201px  三栏并排
+   821–1200 两栏，右侧面板收为底部横向条带
+   ≤820     单栏纵向堆叠
+   ========================================================= */
+
+/* 矮屏（笔记本 1366×768 / 1280×800）保持三栏，但收紧纵向间距，
+   尽量让左右面板一屏放下，仍不够时靠滚动 + 底部渐隐提示 */
+@media (min-width:1201px) and (max-height:880px){
+  .block{padding:6px 0}
+  .block h2{margin-bottom:6px}
+  .slider{margin-bottom:6px}
+  .preset{padding:6px 8px}
+  .mode{padding:6px 10px}
+  .srcRow{padding:4px 8px}
+  .cue{padding:6px 8px}
+  .ears{gap:5px;margin-bottom:7px}
+  .rateRow{gap:6px}
+}
+
+/* 更矮的屏（1280×800 及以下）省掉线索说明句，优先保证控件完整可见 */
+@media (min-width:1201px) and (max-height:830px){
+  #rightPanel .cueNote{display:none}
+  .slider{margin-bottom:4px}
+  .slider>span{margin-bottom:3px}
+  .mode{padding:5px 10px}
+  .preset{padding:5px 8px}
+  .preset span{font-size:10px}
+  .ears{gap:4px;margin-bottom:6px}
+  .cue b{font-size:12px}
+  .pathTools{margin:0 0 6px;padding:6px}
+}
+
+@media (max-width:1200px){
+  #layout{grid-template-columns:240px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+
+  /* 右栏变成底部四列条带 */
+  #rightPanel{
+    grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:0 18px;max-height:216px;padding:0 14px 8px;
+  }
+  #rightPanel .block{border-bottom:none;padding:8px 0}
+  #rightPanel .block h2{margin-bottom:6px}
+
+  /* 声源列表与参数改为两列，压缩高度 */
+  #sourceList{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;align-content:start}
+  .srcRow{padding:5px 6px}
+  #paramsBlock{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;align-content:start}
+  #paramsBlock h2{grid-column:1 / -1}
+  #paramsBlock .slider{margin-bottom:6px}
+
+  .cue{padding:7px 8px}
+  .rateRow>span{width:48px}
+  .star{width:20px;height:20px}
+}
+
+/* ---------------------------------------------------------
+   手机 / 平板竖屏（≤820）
+   与桌面端的根本差别：不再用 100vh 切三行，改为整页自然滚动。
+   桌面端面板靠内部滚动，手机上那样会把人困在只有 160px 高的格子里，
+   所以这里取消内部滚动，让面板随页面一起走，舞台则前置放大。
+   --------------------------------------------------------- */
+@media (max-width:820px){
+  #app{height:auto;min-height:100dvh;grid-template-rows:auto auto auto}
+
+  /* 顶栏：标题一行 + 操作一行，粘在顶部 */
+  #topbar{
+    position:sticky;top:0;z-index:40;flex-wrap:wrap;
+    gap:8px;padding:8px 12px 9px;
+  }
+  .brand{flex:1 1 100%;gap:9px}
+  .logo{width:26px;height:26px;flex:0 0 26px}
+  .brandText h1{font-size:15px;white-space:nowrap}
+  .brandText p{display:none}
+  .topActions{flex:1 1 100%;gap:8px}
+  .topActions .badge{flex:0 0 auto}
+  .topActions .btn{flex:1 1 0;justify-content:center;padding:9px 8px;font-size:12.5px;white-space:nowrap}
+
+  #layout{
+    grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;
+    padding:10px 12px 8px;gap:10px;
+  }
+
+  /* 舞台排到最前，并给足高度 */
+  #stage{order:-1;height:50vh;min-height:320px;max-height:500px}
+  #room{touch-action:none}            /* 手指拖拽转视角，不触发页面滚动 */
+
+  /* 面板回到文档流 */
+  #leftPanel,#rightPanel{max-height:none;overflow:visible;padding:0 2px 4px}
+  #rightPanel{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+  #rightPanel .block{padding:10px 0}
+
+  .stageHint{left:8px;right:8px;bottom:8px;font-size:10px;padding:5px 8px;line-height:1.4}
+
+  /* 底部指标条：粘底 + 横向滑动，避免挤成一条缝 */
+  #meterbar{
+    position:sticky;bottom:0;z-index:35;
+    flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    gap:0;padding:8px 12px;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  #meterbar::-webkit-scrollbar{display:none}
+  #meterbar .metric{flex:0 0 auto;padding-right:16px;border-right:1px solid var(--line)}
+  #meterbar .metric:last-child{border-right:none}
+  #meterbar .metric.grow{flex:0 0 200px;min-width:200px}
+  #meterbar .metric.lr{flex:0 0 120px;min-width:120px}
+}
+
+/* 窄手机（≤520）：单列排布，进一步压缩留白 */
+@media (max-width:520px){
+  #stage{height:44vh;min-height:300px}
+  #rightPanel,#sourceList,#paramsBlock{grid-template-columns:minmax(0,1fr)}
+  #paramsBlock h2{grid-column:auto}
+  .presetGrid{grid-template-columns:1fr 1fr}
+  .block h2{font-size:12px}
+}

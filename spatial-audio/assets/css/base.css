@@ -1,0 +1,115 @@
+/* =========================================================
+   base.css — 设计变量、重置、顶栏与整体布局骨架
+   ========================================================= */
+
+:root{
+  --bg:#080b10;
+  --bg2:#0b1017;
+  --panel:#0e141c;
+  --panel2:#121a24;
+  --line:#1b2634;
+  --line2:#243244;
+  --txt:#e9f0f7;
+  --dim:#8a9aac;
+  --dim2:#61707f;
+  --teal:#35e3c2;
+  --amber:#ffb457;
+  --violet:#a78bfa;
+  --blue:#5aa9ff;
+  --pink:#ff7ac6;
+  --red:#ff6b6b;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Consolas,monospace;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(1100px 700px at 18% -12%, #12202c 0%, transparent 62%),
+    radial-gradient(900px 600px at 92% 108%, #12192a 0%, transparent 60%),
+    var(--bg);
+  color:var(--txt);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+  overflow:hidden;
+}
+
+/* 三行骨架：顶栏 / 主体 / 底部指标条 */
+#app{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+
+/* ---------------- 顶栏 ---------------- */
+#topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px 18px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(18,26,36,.92),rgba(9,13,19,.72));
+  backdrop-filter:blur(10px);
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{position:relative;width:34px;height:34px;flex:0 0 auto}
+.logo i{position:absolute;border-radius:50%;border:1.5px solid var(--teal);opacity:.75}
+.logo i:nth-child(1){inset:0;opacity:.22}
+.logo i:nth-child(2){inset:6px;opacity:.42}
+.logo i:nth-child(3){inset:12px;background:var(--teal);border:none;box-shadow:0 0 14px var(--teal)}
+.logo i:nth-child(4){width:3px;height:3px;background:var(--amber);border:none;left:26px;top:4px;box-shadow:0 0 8px var(--amber)}
+.brandText h1{font-size:16px;margin:0;letter-spacing:.4px;font-weight:650}
+.brandText p{margin:2px 0 0;font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topActions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+
+.badge{
+  font:11px/1 var(--mono);letter-spacing:.5px;color:var(--teal);
+  border:1px solid rgba(53,227,194,.34);background:rgba(53,227,194,.08);
+  padding:7px 10px;border-radius:999px;white-space:nowrap;
+}
+
+/* ---------------- 按钮 ---------------- */
+.btn{
+  font:13px/1 inherit;color:var(--txt);background:var(--panel2);
+  border:1px solid var(--line2);border-radius:9px;padding:9px 14px;cursor:pointer;
+  transition:.16s ease;white-space:nowrap;
+}
+.btn:hover{border-color:#33465c;background:#16202c;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{
+  background:linear-gradient(180deg,#39e6c4,#20b79b);color:#052520;border:none;font-weight:650;
+  box-shadow:0 6px 20px -8px rgba(53,227,194,.85);
+}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.primary.on{background:linear-gradient(180deg,#ff8f6b,#e8663f);color:#2a0d05;box-shadow:0 6px 20px -8px rgba(255,120,80,.8)}
+.btn.ghost{color:var(--dim)}
+.btn.ghost.on{color:var(--amber);border-color:rgba(255,180,87,.45);background:rgba(255,180,87,.08)}
+.btn.small{padding:7px 12px;font-size:12px;width:100%;margin-top:8px}
+.btn.big{padding:12px 26px;font-size:14px;border-radius:11px}
+
+/* ---------------- 三栏布局 ---------------- */
+#layout{
+  display:grid;grid-template-columns:264px minmax(0,1fr) 302px;
+  gap:12px;padding:12px 14px;min-height:0;
+}
+
+/* ---------------- 通用面板 ---------------- */
+.panel{
+  background:linear-gradient(180deg,rgba(17,24,33,.95),rgba(12,17,24,.95));
+  border:1px solid var(--line);border-radius:14px;
+  padding:4px 14px 12px;overflow:auto;min-height:0;
+  scrollbar-width:thin;scrollbar-color:#243244 transparent;
+}
+/* 滚动到底部时的渐隐提示 */
+.panel::after{
+  content:"";display:block;position:sticky;bottom:0;height:20px;
+  margin:0 -14px -20px;pointer-events:none;
+  background:linear-gradient(to top,rgba(11,16,23,.98) 20%,rgba(11,16,23,0));
+}
+.panel::-webkit-scrollbar{width:7px}
+.panel::-webkit-scrollbar-thumb{background:#243244;border-radius:4px}
+
+.block{padding:8px 0;border-bottom:1px solid rgba(27,38,52,.7)}
+.block:last-child{border-bottom:none}
+.block h2{
+  margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.7px;color:var(--dim);
+  display:flex;align-items:center;gap:7px;
+}
+.block h2 em{font-style:normal;color:var(--teal);font-weight:600}
+.tag{
+  font:10px/1 var(--mono);color:var(--dim2);border:1px solid var(--line2);
+  padding:3px 6px;border-radius:5px;letter-spacing:.4px;
+}

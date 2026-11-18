@@ -1,9 +1,10 @@
 # MLP 学习与训练可视化实验室
 
-一个纯前端的静态网站，包含两个可直接运行的工具：
+一个纯前端的静态网站，包含三个可直接运行的工具：
 
 - **闯关游戏**（网站根入口 `index.html`）：把 MLP 训练的核心知识转化为 5 个关卡，通过操作、即时反馈、得分和星级逐步理解。
-- **训练可视化工具**（`visualizer/index.html`）：交互式观察网络结构、权重、偏置、梯度、损失、准确率和决策边界随训练的变化。
+- **训练可视化工具**（`visualizer/`）：交互式观察网络结构、权重、偏置、梯度、损失、准确率和决策边界随训练的变化。
+- **三维空间音频实验室**（`spatial-audio/`）：在三维房间里摆放声源、拖动轨迹，实时听见方位、高度与距离。
 
 无外部依赖、无构建步骤、无后端，所有计算都在浏览器本地完成。桌面和移动浏览器均可直接访问。
 
@@ -15,6 +16,7 @@
 | --- | --- | --- |
 | 闯关游戏首页 | `/` 或 `/index.html` | 5 关挑战：前向传播、权重调参、学习率、梯度方向、完整训练 |
 | 训练可视化工具 | `/visualizer/` | 可调参数的 MLP 训练过程可视化 |
+| 三维空间音频实验室 | `/spatial-audio/` | 三维房间 + 双耳空间化 + 距离与反射模型 |
 
 ---
 
@@ -52,7 +54,23 @@
 
 ---
 
-## 三、仓库文件结构
+## 三、三维空间音频实验室
+
+打开 `/spatial-audio/`，**建议戴耳机**（外放听不出方位）。
+
+在一个三维虚拟房间里放了 6 个声源（犬吠、脚步、铃声、雨声、拨弦、号角），可以拖动声源的
+水平位置与离地高度、编辑运动轨迹，页面实时给出方位角、仰角、距离、ITD、ILD 等读数。
+
+- **五种空间化模式**：单声道 / 立体声 / 双耳模型 / 双耳 HRTF / 一阶 Ambisonics，
+  可即时切换，「A/B 对照试听」会自动轮播对比。
+- **距离感知**：空气吸收让高频随距离衰减，配合一次镜像反射给出直达/反射比（D/R）。
+- **客观评测**：从输出实测 ITD 误差、FOA 角度误差与扩散度，不依赖参考数据集。
+
+技术细节、公式推导与已知取舍见 [`spatial-audio/README.md`](./spatial-audio/README.md)。
+
+---
+
+## 四、仓库文件结构
 
 ```text
 .
@@ -63,6 +81,11 @@
 │   ├── index.html              # 训练可视化工具入口
 │   ├── styles.css
 │   └── app.js                  # 可视化工具训练与渲染逻辑
+├── spatial-audio/              # 三维空间音频实验室（自带 README 与技术说明）
+│   ├── index.html              # 演示入口
+│   ├── assets/                 # css / js / 音频素材 / 分享封面
+│   ├── docs/                   # 技术说明、转发文案、试听干声
+│   └── tools/                  # 本地服务器、自检、封面生成
 ├── .nojekyll                   # GitHub Pages 静态文件标记
 ├── .github/workflows/pages.yml # GitHub Pages 自动部署工作流
 ├── .gitignore
@@ -74,9 +97,9 @@
 
 ---
 
-## 四、本地运行
+## 五、本地运行
 
-直接双击 `index.html` 或 `visualizer/index.html` 即可。若需要模拟线上路径：
+直接双击 `index.html`、`visualizer/index.html` 或 `spatial-audio/index.html` 即可。若需要模拟线上路径：
 
 ```bash
 python -m http.server 8000
@@ -86,16 +109,17 @@ python -m http.server 8000
 
 - 游戏：<http://localhost:8000/>
 - 可视化工具：<http://localhost:8000/visualizer/>
+- 空间音频：<http://localhost:8000/spatial-audio/>
 
 ---
 
-## 五、部署
+## 六、部署
 
 已提供 GitHub Pages 自动部署工作流与手动发布说明，详见 [DEPLOY.md](./DEPLOY.md)。简要步骤：推送到 `main` → 仓库 Settings → Pages → Source 选择 GitHub Actions → 完成。
 
 ---
 
-## 六、技术实现
+## 七、技术实现
 
 - 原生 HTML / CSS / JavaScript，SVG + Canvas 绘图，无框架、无第三方库。
 - 训练算法：tanh 隐藏层 + sigmoid 输出 + 二元交叉熵 + 全批量梯度下降。
