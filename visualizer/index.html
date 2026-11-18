@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLP 训练可视化实验室</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">MLP</div>
+      <div>
+        <h1>多层感知机训练可视化实验室</h1>
+        <p>观察权重、偏置、梯度与前向传播在训练过程中的每一步变化</p>
+      </div>
+    </div>
+    <div class="top-stats">
+      <div class="stat"><span class="stat-label">轮次</span><strong id="statEpoch">0 / 0</strong></div>
+      <div class="stat"><span class="stat-label">损失</span><strong id="statLoss">—</strong></div>
+      <div class="stat"><span class="stat-label">准确率</span><strong id="statAcc">—</strong></div>
+      <div class="stat"><span class="stat-label">状态</span><strong id="statState" class="badge">就绪</strong></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ============ 左侧控制面板 ============ -->
+    <aside class="panel controls">
+      <div class="panel-title">训练参数</div>
+
+      <div class="field">
+        <label for="dataset">数据集</label>
+        <select id="dataset">
+          <option value="circles">同心圆（非线性可分）</option>
+          <option value="xor">异或 XOR</option>
+          <option value="linear">线性可分</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="hiddenCount">隐藏层数 <output id="hiddenCountOut">2</output></label>
+        <input type="range" id="hiddenCount" min="1" max="3" step="1" value="2">
+        <div class="ticks"><span>1 层</span><span>3 层</span></div>
+      </div>
+
+      <div class="field">
+        <label for="hiddenSize">每层神经元数 <output id="hiddenSizeOut">8</output></label>
+        <input type="range" id="hiddenSize" min="2" max="16" step="1" value="8">
+        <div class="ticks"><span>2</span><span>16</span></div>
+      </div>
+
+      <div class="field">
+        <label for="lr">学习率 <output id="lrOut">0.300</output></label>
+        <input type="range" id="lr" min="1" max="100" step="1" value="92">
+        <div class="ticks"><span>0.001</span><span>0.5</span></div>
+      </div>
+
+      <div class="field">
+        <label for="epochs">训练轮数 <output id="epochsOut">200</output></label>
+        <input type="range" id="epochs" min="20" max="500" step="10" value="200">
+        <div class="ticks"><span>20</span><span>500</span></div>
+      </div>
+
+      <div class="field">
+        <label for="activation">隐藏层激活函数</label>
+        <select id="activation">
+          <option value="tanh">tanh</option>
+          <option value="relu">ReLU</option>
+        </select>
+      </div>
+
+      <button id="retrainBtn" class="btn btn-primary">重新训练</button>
+
+      <div class="divider"></div>
+      <div class="panel-title">训练回放</div>
+
+      <div class="play-row">
+        <button id="prevBtn" class="btn btn-icon" title="上一轮">◀</button>
+        <button id="playBtn" class="btn btn-play">▶ 播放</button>
+        <button id="nextBtn" class="btn btn-icon" title="下一轮">▶</button>
+        <button id="resetBtn" class="btn btn-icon" title="回到起点">↺</button>
+      </div>
+
+      <div class="field">
+        <label for="scrub">当前轮次 <output id="scrubOut">0</output></label>
+        <input type="range" id="scrub" min="0" max="200" step="1" value="0">
+      </div>
+
+      <div class="field">
+        <label for="speed">播放速度 <output id="speedOut">8 轮/秒</output></label>
+        <input type="range" id="speed" min="1" max="40" step="1" value="8">
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-title">显示选项</div>
+
+      <div class="field inline">
+        <label for="edgeMode">网络连线</label>
+        <select id="edgeMode">
+          <option value="weight">按权重着色</option>
+          <option value="contrib">按激活贡献着色</option>
+        </select>
+      </div>
+
+      <button id="demoBtn" class="btn btn-ghost">演示单样本前向传播</button>
+
+      <div class="hint-box">
+        点击右侧「决策边界」中的数据点，可切换前向传播演示所使用的样本。
+      </div>
+    </aside>
+
+    <!-- ============ 主内容区 ============ -->
+    <main class="content">
+      <section class="card span8">
+        <div class="card-head">
+          <div>
+            <h2>网络结构与前向传播</h2>
+            <p>节点颜色表示激活值；连线粗细表示权重/贡献强度，红色为正、蓝色为负</p>
+          </div>
+          <span class="tag" id="tagProbe">样本 #0</span>
+        </div>
+        <div class="card-body">
+          <svg id="networkSvg" viewBox="0 0 880 340" preserveAspectRatio="xMidYMid meet"></svg>
+          <div id="forwardPanel" class="forward-panel"></div>
+        </div>
+      </section>
+
+      <section class="card span4">
+        <div class="card-head">
+          <div>
+            <h2>决策边界</h2>
+            <p>当前网络对整个样本空间的分类结果</p>
+          </div>
+        </div>
+        <div class="card-body center">
+          <canvas id="boundaryCanvas" width="300" height="300"></canvas>
+          <div class="legend">
+            <span><i class="dot dot-red"></i>类别 1</span>
+            <span><i class="dot dot-blue"></i>类别 0</span>
+            <span><i class="ring"></i>当前样本</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="card span8">
+        <div class="card-head">
+          <div>
+            <h2>各层权重热力图</h2>
+            <p>行 = 本层神经元，列 = 上一层神经元；点击格子可查看该参数的更新过程</p>
+          </div>
+        </div>
+        <div class="card-body" id="weightMaps"></div>
+      </section>
+
+      <section class="card span4">
+        <div class="card-head">
+          <div>
+            <h2>偏置变化</h2>
+            <p>各层偏置项 b 的当前取值</p>
+          </div>
+        </div>
+        <div class="card-body" id="biasBars"></div>
+      </section>
+
+      <section class="card span6">
+        <div class="card-head">
+          <div><h2>损失曲线</h2><p>二分类交叉熵（全批量梯度下降）</p></div>
+        </div>
+        <div class="card-body"><svg id="lossChart" class="chart" viewBox="0 0 520 220" preserveAspectRatio="none"></svg></div>
+      </section>
+
+      <section class="card span6">
+        <div class="card-head">
+          <div><h2>准确率曲线</h2><p>训练集分类准确率</p></div>
+        </div>
+        <div class="card-body"><svg id="accChart" class="chart" viewBox="0 0 520 220" preserveAspectRatio="none"></svg></div>
+      </section>
+
+      <section class="card span8">
+        <div class="card-head">
+          <div>
+            <h2>梯度与参数更新</h2>
+            <p>梯度 ∂L/∂w 热力图 + 各层参数更新量 ‖ΔW‖ 随轮次的变化</p>
+          </div>
+        </div>
+        <div class="card-body" id="gradMaps"></div>
+        <div class="card-body"><svg id="deltaChart" class="chart" viewBox="0 0 720 180" preserveAspectRatio="none"></svg></div>
+      </section>
+
+      <section class="card span4">
+        <div class="card-head">
+          <div><h2>单个参数更新详情</h2><p id="paramTitle">W¹[0,0]</p></div>
+        </div>
+        <div class="card-body">
+          <div id="updateDetail"></div>
+          <svg id="weightTrajectory" class="chart" viewBox="0 0 320 130" preserveAspectRatio="none"></svg>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
