@@ -7,24 +7,22 @@
 
 所有资源引用均为相对路径，可直接放在任意子路径下托管。
 
-## 方式一：GitHub Pages 自动部署（推荐）
+## 方式一：从分支直接发布（推荐，无需 Actions）
 
-仓库已包含 `.github/workflows/pages.yml`。首次启用步骤：
-
-1. 将代码推送到 `main` 分支。
-2. 打开仓库 **Settings → Pages**。
-3. 在 **Build and deployment** 中，将 **Source** 选择为 **GitHub Actions**。
-4. 等待工作流运行完成（Actions 页可见 `Deploy static site to GitHub Pages`）。
-5. 访问 `https://<用户名>.github.io/<仓库名>/`。
-
-之后每次推送到 `main` 都会自动重新发布。也可在 Actions 页手动触发 `workflow_dispatch`。
-
-## 方式二：从分支直接发布（不使用 Actions）
-
-1. 打开 **Settings → Pages**。
-2. **Source** 选择 **Deploy from a branch**。
+1. 打开仓库 **Settings → Pages**。
+2. 在 **Build and deployment** 中，**Source** 选择 **Deploy from a branch**。
 3. 分支选 `main`，目录选 `/ (root)`，保存。
 4. 访问 `https://<用户名>.github.io/<仓库名>/`。
+
+本项目是纯静态站点，此方式即可完整发布，且每次推送到 `main` 后 Pages 会自动更新。
+
+## 方式二：改用 GitHub Actions 工作流（可选）
+
+仓库根目录提供了 `github-pages.yml.example`（GitHub 的推送保护不允许通过 Personal Access Token 直接创建 `.github/workflows/` 下的文件，因此以示例文件形式提供）。如需改用 Actions 部署：
+
+1. 在仓库网页端手动创建 `.github/workflows/pages.yml`，把 `github-pages.yml.example` 的内容复制进去；或使用具备 `workflow` scope 的 Token 推送该文件。
+2. 打开 **Settings → Pages**，将 **Source** 选择为 **GitHub Actions**。
+3. 之后每次推送到 `main` 都会触发 `Deploy static site to GitHub Pages` 工作流，也可在 Actions 页手动触发 `workflow_dispatch`。
 
 根目录的 `.nojekyll` 用于避免静态文件被 Jekyll 处理。
 
@@ -55,7 +53,7 @@ python -m http.server 8000
 │   ├── styles.css
 │   └── app.js
 ├── .nojekyll                   # GitHub Pages 静态文件标记
-├── .github/workflows/pages.yml # 自动部署工作流
+├── github-pages.yml.example    # Actions 部署工作流示例（可选）
 ├── README.md
 └── DEPLOY.md
 ```
